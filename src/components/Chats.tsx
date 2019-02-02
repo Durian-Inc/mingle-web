@@ -1,5 +1,8 @@
 import React from 'react'
 import { List, Avatar } from 'antd';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as chatsActions from "../actions/chatsActions";
 
 const data = [
   {
@@ -20,17 +23,24 @@ const data = [
   },
 ];
 
-class Chats extends React.Component {
+interface IProps{ chats: any }
+interface IState{}
+
+class Chats extends React.Component<any> {
+  componentDidMount() {
+    this.props.chatsActions.fetchChats();
+  }
+
   render() {
     return (
       <List
         itemLayout="horizontal"
-        dataSource={data}
+        dataSource={this.props.chats}
         renderItem={(item: any) => (
           <List.Item>
             <List.Item.Meta
-              title={item.title}
-              description={item.message}
+              title={item.name}
+              description={item.created}
           />
           </List.Item>
         )}
@@ -39,4 +49,19 @@ class Chats extends React.Component {
   }
 }
 
-export default Chats
+function mapStateToProps(state: any) {
+  return {
+    chats: state.chats
+  };
+}
+
+function mapDispatchToProps(dispatch: any) {
+  return {
+    chatsActions: bindActionCreators(chatsActions, dispatch)
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Chats);
